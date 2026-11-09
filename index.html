@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ระบบ HR</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon-180.png">
+<script>
+  // วางลิงก์เว็บแอปที่ลงท้ายด้วย /exec ระหว่างเครื่องหมายคำพูดด้านล่าง (บรรทัดเดียวเท่านั้นที่ต้องแก้)
+  var APP_URL = "PASTE_EXEC_URL_HERE";
+  // ส่งต่อพารามิเตอร์ทั้งหมด (เช่น ?b=...&t=... ของ QR) ไปยังเว็บแอปด้วย
+  var go = APP_URL + location.search + location.hash;
+  if (APP_URL.indexOf("https://script.google.com/") === 0) location.replace(go);
+</script>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0e1512;color:#e4efe9;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:16px}
+  img{width:96px;height:96px;border-radius:22px}
+  a{display:inline-block;margin-top:16px;padding:12px 24px;background:#4cc79b;color:#06241a;border-radius:10px;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <img src="icon-192.png" alt="">
+  <h1>ระบบ HR</h1>
+  <p>กำลังเปิดระบบ…</p>
+  <a id="l" href="#">เปิดระบบ</a>
+</main>
+<script>document.getElementById("l").href = go;</script>
+</body>
+</html>
