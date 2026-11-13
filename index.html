@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 
 <!-- ============================================================
      ★ จุดเดียวที่ต้องแก้ ★
@@ -11,18 +11,7 @@
      ============================================================ -->
 <script>
   var APP_URL = "https://script.google.com/macros/s/AKfycbyRh9H_TU2KhwITtfr6D3K-ekO3pr9p36LDPZwU0i2CGrpNfeVmO5vcTqIooifVgPT9hA/exec";
-
-  /* ปกติให้เข้าแอปทันที หน้าสอนติดตั้งจะโผล่เฉพาะตอนเปิดด้วยลิงก์ที่ลงท้าย ?install
-     ยกเว้นเปิดจากไอคอนบนหน้าจอโฮม จะเข้าแอปให้เลยเสมอ */
-  (function () {
-    var standalone = window.navigator.standalone === true ||
-      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-    var wantInstall = /install/i.test(location.search + location.hash);
-    if (standalone || !wantInstall) location.replace(APP_URL);
-  })();
 </script>
-<style>body{visibility:hidden}body.ready{visibility:visible}</style>
-<noscript><style>body{visibility:visible !important}</style></noscript>
 
 <title>CCS</title>
 <meta name="description" content="ระบบ HR บริษัท ชุมชนช็อป จำกัด">
@@ -30,51 +19,66 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CCS">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#1211c2">
+<meta name="theme-color" content="#f2f3fa">
 <style>
   :root{
     --bg:#f2f3fa; --card:#fff; --ink:#101010; --mute:#6a6e86; --line:#e7e9f3;
-    --accent:#1211c2; --accent-2:#0d0c98; --yellow:#f7ee5c;
+    --accent:#1211c2; --accent-2:#0d0c98;
     --r:18px; --shadow:0 1px 2px rgba(20,20,60,.05),0 10px 30px rgba(20,20,60,.08);
     --font:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; font-family:var(--font); background:var(--bg); color:var(--ink);
-    line-height:1.6; -webkit-text-size-adjust:100%;
-    padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
-            max(32px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
-    display:flex; justify-content:center;
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); -webkit-text-size-adjust:100%}
+
+  /* โหมดปกติ: ครอบแอปไว้เต็มจอ ไม่มีแถบเบราว์เซอร์ */
+  #frame{position:fixed; inset:0; border:0; width:100%; height:100%; background:var(--bg)}
+
+  /* หน้าจอรอโหลด */
+  #splash{
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; background:var(--bg); transition:opacity .25s; z-index:2;
   }
-  .wrap{width:100%; max-width:460px}
-  .brand{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; margin:18px 0 26px}
+  #splash img{width:84px; height:84px; border-radius:20px; box-shadow:var(--shadow)}
+  #splash p{margin:0; color:var(--mute); font-size:14px}
+  #splash.gone{opacity:0; pointer-events:none}
+  .dots{display:flex; gap:6px}
+  .dots i{width:7px; height:7px; border-radius:50%; background:var(--accent); opacity:.3; animation:b 1.1s infinite}
+  .dots i:nth-child(2){animation-delay:.15s} .dots i:nth-child(3){animation-delay:.3s}
+  @keyframes b{0%,100%{opacity:.25}50%{opacity:1}}
+
+  /* ถ้าครอบไม่สำเร็จ ให้ทางออก */
+  #fallback{position:fixed; inset:0; z-index:3; display:none; align-items:center; justify-content:center; padding:24px; background:var(--bg)}
+  #fallback div{max-width:360px; text-align:center}
+  .btn{display:block; margin-top:16px; background:var(--accent); color:#fff; text-decoration:none;
+       font-size:17px; font-weight:600; padding:15px 20px; border-radius:14px}
+
+  /* โหมดสอนติดตั้ง (เปิดด้วยลิงก์ที่ลงท้าย ?install) */
+  #guide{display:none; padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+         max(32px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+  #guide .wrap{max-width:460px; margin:0 auto}
+  .brand{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; margin:12px 0 24px}
   .brand img{width:96px; height:96px; border-radius:22px; box-shadow:var(--shadow)}
-  .brand h1{margin:0; font-size:22px; letter-spacing:-.01em}
+  .brand h1{margin:0; font-size:22px}
   .brand p{margin:0; color:var(--mute); font-size:15px}
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:20px; box-shadow:var(--shadow)}
-  .card+.card{margin-top:16px}
-  .go{
-    display:block; width:100%; text-align:center; text-decoration:none;
-    background:var(--accent); color:#fff; font-size:17px; font-weight:600;
-    padding:16px 20px; border-radius:14px;
-  }
-  .go:active{background:var(--accent-2)}
-  .note{margin:12px 2px 0; color:var(--mute); font-size:13.5px; text-align:center}
-  h2{margin:0 0 4px; font-size:16px; display:flex; align-items:center; gap:8px}
+  h2{margin:0 0 4px; font-size:16px}
   h2 small{font-weight:400; color:var(--mute); font-size:13px}
   ol{margin:10px 0 0; padding-left:22px}
   li{margin:7px 0; font-size:15px}
   b.key{background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:1px 7px; font-weight:600; white-space:nowrap}
   .warn{margin-top:16px; background:#fdf3dc; border:1px solid #f0dca8; border-radius:14px; padding:14px 16px; font-size:14.5px}
   .warn b{color:#8a5a00}
-  footer{margin:26px 0 0; text-align:center; color:var(--mute); font-size:12.5px}
+  footer{margin:24px 0 0; text-align:center; color:var(--mute); font-size:12.5px}
 </style>
 </head>
 <body>
-<div class="wrap">
 
+<!-- โหมดสอนติดตั้ง -->
+<div id="guide"><div class="wrap">
   <div class="brand">
     <img src="icon-192.png" alt="">
     <div>
@@ -84,13 +88,8 @@
   </div>
 
   <div class="card">
-    <a class="go" id="go" href="#">เข้าสู่ระบบ</a>
-    <p class="note">ใช้อีเมลและรหัสผ่านที่ HR ให้ไว้</p>
-  </div>
-
-  <div class="card">
     <h2>📱 ติดตั้งลงหน้าจอมือถือ <small>ทำครั้งเดียว</small></h2>
-    <p style="margin:6px 0 0; color:var(--mute); font-size:14.5px">ติดตั้งแล้วกดไอคอนจะเข้าระบบให้เลย ไม่เจอหน้านี้อีก และไม่ต้องล็อกอินใหม่ทุกครั้ง</p>
+    <p style="margin:6px 0 0; color:var(--mute); font-size:14.5px">ติดตั้งแล้วกดไอคอนจะเข้าระบบเต็มจอเลย ไม่ต้องล็อกอินใหม่ทุกครั้ง</p>
 
     <h2 style="margin-top:16px">iPhone</h2>
     <ol>
@@ -111,13 +110,53 @@
       “เปิดในเบราว์เซอร์” ก่อน ถ้าติดตั้งจากในไลน์เลยจะไม่ได้ไอคอน และต้องล็อกอินใหม่ทุกวัน
     </div>
   </div>
-
   <footer>บริษัท ชุมชนช็อป จำกัด</footer>
+</div></div>
+
+<!-- โหมดใช้งาน -->
+<div id="splash">
+  <img src="icon-192.png" alt="">
+  <div class="dots"><i></i><i></i><i></i></div>
+  <p>กำลังเปิดระบบ…</p>
 </div>
 
+<div id="fallback"><div>
+  <img src="icon-192.png" alt="" style="width:72px;height:72px;border-radius:18px">
+  <p style="color:var(--mute);font-size:15px">เปิดระบบในหน้านี้ไม่ได้ กดปุ่มข้างล่างเพื่อเข้าใช้งาน</p>
+  <a class="btn" id="direct" href="#">เข้าสู่ระบบ</a>
+</div></div>
+
 <script>
-  document.getElementById('go').href = APP_URL;
-  document.body.classList.add('ready');
+(function () {
+  var standalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  var wantGuide = /install/i.test(location.search + location.hash) && !standalone;
+
+  if (wantGuide) {                       // เปิดด้วยลิงก์ ?install จากเบราว์เซอร์ → สอนติดตั้ง
+    document.getElementById('guide').style.display = 'block';
+    document.getElementById('splash').remove();
+    return;
+  }
+
+  // ครอบแอปไว้ในหน้านี้ จะได้เต็มจอ ไม่มีแถบเบราว์เซอร์ และไอคอนยังเป็นของเรา
+  document.getElementById('direct').href = APP_URL;
+  var fr = document.createElement('iframe');
+  fr.id = 'frame';
+  fr.src = APP_URL;
+  fr.allow = 'geolocation; clipboard-write; fullscreen';
+  fr.setAttribute('title', 'ระบบ HR');
+  var done = false;
+  fr.addEventListener('load', function () {
+    done = true;
+    var s = document.getElementById('splash');
+    s.classList.add('gone');
+    setTimeout(function () { s.remove(); }, 300);
+  });
+  document.body.appendChild(fr);
+  setTimeout(function () {               // ครอบไม่ขึ้นภายใน 12 วินาที → เสนอทางออก
+    if (!done) document.getElementById('fallback').style.display = 'flex';
+  }, 12000);
+})();
 </script>
 </body>
 </html>
