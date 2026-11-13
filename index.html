@@ -11,7 +11,18 @@
      ============================================================ -->
 <script>
   var APP_URL = "https://script.google.com/macros/s/AKfycbyRh9H_TU2KhwITtfr6D3K-ekO3pr9p36LDPZwU0i2CGrpNfeVmO5vcTqIooifVgPT9hA/exec";
+
+  /* ปกติให้เข้าแอปทันที หน้าสอนติดตั้งจะโผล่เฉพาะตอนเปิดด้วยลิงก์ที่ลงท้าย ?install
+     ยกเว้นเปิดจากไอคอนบนหน้าจอโฮม จะเข้าแอปให้เลยเสมอ */
+  (function () {
+    var standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    var wantInstall = /install/i.test(location.search + location.hash);
+    if (standalone || !wantInstall) location.replace(APP_URL);
+  })();
 </script>
+<style>body{visibility:hidden}body.ready{visibility:visible}</style>
+<noscript><style>body{visibility:visible !important}</style></noscript>
 
 <title>CCS</title>
 <meta name="description" content="ระบบ HR บริษัท ชุมชนช็อป จำกัด">
@@ -79,7 +90,7 @@
 
   <div class="card">
     <h2>📱 ติดตั้งลงหน้าจอมือถือ <small>ทำครั้งเดียว</small></h2>
-    <p style="margin:6px 0 0; color:var(--mute); font-size:14.5px">ติดตั้งแล้วจะเปิดได้เหมือนแอปจริง ไม่ต้องล็อกอินใหม่ทุกครั้ง</p>
+    <p style="margin:6px 0 0; color:var(--mute); font-size:14.5px">ติดตั้งแล้วกดไอคอนจะเข้าระบบให้เลย ไม่เจอหน้านี้อีก และไม่ต้องล็อกอินใหม่ทุกครั้ง</p>
 
     <h2 style="margin-top:16px">iPhone</h2>
     <ol>
@@ -105,13 +116,8 @@
 </div>
 
 <script>
-  (function () {
-    document.getElementById('go').href = APP_URL;
-    // เปิดจากไอคอนบนหน้าจอโฮม → เข้าแอปให้เลย ไม่ต้องกดซ้ำ
-    var standalone = window.navigator.standalone === true ||
-      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-    if (standalone) location.replace(APP_URL);
-  })();
+  document.getElementById('go').href = APP_URL;
+  document.body.classList.add('ready');
 </script>
 </body>
 </html>
