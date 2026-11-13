@@ -3,44 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CCS</title>
+
+<!-- ============================================================
+     ★ จุดเดียวที่ต้องแก้ ★
+     วางลิงก์เว็บแอปของคุณ (ลงท้ายด้วย /exec) ไว้ในเครื่องหมายคำพูดข้างล่างนี้
+     หาได้จาก Apps Script → Deploy → Manage deployments → ช่อง Web app URL
+     ============================================================ -->
 <script>
-  // วางลิงก์เว็บแอปที่ลงท้ายด้วย /exec ระหว่างเครื่องหมายคำพูด (บรรทัดที่ 9 เท่านั้นที่ต้องแก้)
-var APP_URL = "https://script.google.com/macros/s/AKfycbyRh9H_TU2KhwITtfr6D3K-ekO3pr9p36LDPZwU0i2CGrpNfeVmO5vcTqIooifVgPT9hA/exec";
-  var go = APP_URL + location.search + location.hash;
-  var installing = /[?&]install=1/.test(location.search);
-  var standalone = navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-  var ok = APP_URL.indexOf("https://script.google.com/") === 0;
-  // เปิดจากไอคอนบนหน้าจอ: แสดงแอปเต็มจอ (ไม่มีแถบเบราว์เซอร์) / เปิดจากลิงก์ปกติหรือสแกน QR: ส่งต่อไปที่แอป
-  if (ok && !standalone && !installing) location.replace(go);
+  var APP_URL = "https://script.google.com/macros/s/AKfycbyRh9H_TU2KhwITtfr6D3K-ekO3pr9p36LDPZwU0i2CGrpNfeVmO5vcTqIooifVgPT9hA/exec";
 </script>
+
+<title>CCS</title>
+<meta name="description" content="ระบบ HR บริษัท ชุมชนช็อป จำกัด">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CCS">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#ffffff">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon-180.png">
+<meta name="theme-color" content="#1211c2">
 <style>
-  html,body{margin:0;height:100%;background:#fff}
-  .info{min-height:100vh;display:grid;place-items:center;background:#f2f3fa;color:#101010;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:16px}
-  .info img{width:96px;height:96px;border-radius:22px}
-  .info a{display:inline-block;margin-top:16px;padding:12px 24px;background:#1211c2;color:#fff;border-radius:10px;text-decoration:none;font-weight:600}
-  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+  :root{
+    --bg:#f2f3fa; --card:#fff; --ink:#101010; --mute:#6a6e86; --line:#e7e9f3;
+    --accent:#1211c2; --accent-2:#0d0c98; --yellow:#f7ee5c;
+    --r:18px; --shadow:0 1px 2px rgba(20,20,60,.05),0 10px 30px rgba(20,20,60,.08);
+    --font:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:var(--font); background:var(--bg); color:var(--ink);
+    line-height:1.6; -webkit-text-size-adjust:100%;
+    padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+            max(32px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+    display:flex; justify-content:center;
+  }
+  .wrap{width:100%; max-width:460px}
+  .brand{display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; margin:18px 0 26px}
+  .brand img{width:96px; height:96px; border-radius:22px; box-shadow:var(--shadow)}
+  .brand h1{margin:0; font-size:22px; letter-spacing:-.01em}
+  .brand p{margin:0; color:var(--mute); font-size:15px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:20px; box-shadow:var(--shadow)}
+  .card+.card{margin-top:16px}
+  .go{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    background:var(--accent); color:#fff; font-size:17px; font-weight:600;
+    padding:16px 20px; border-radius:14px;
+  }
+  .go:active{background:var(--accent-2)}
+  .note{margin:12px 2px 0; color:var(--mute); font-size:13.5px; text-align:center}
+  h2{margin:0 0 4px; font-size:16px; display:flex; align-items:center; gap:8px}
+  h2 small{font-weight:400; color:var(--mute); font-size:13px}
+  ol{margin:10px 0 0; padding-left:22px}
+  li{margin:7px 0; font-size:15px}
+  b.key{background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:1px 7px; font-weight:600; white-space:nowrap}
+  .warn{margin-top:16px; background:#fdf3dc; border:1px solid #f0dca8; border-radius:14px; padding:14px 16px; font-size:14.5px}
+  .warn b{color:#8a5a00}
+  footer{margin:26px 0 0; text-align:center; color:var(--mute); font-size:12.5px}
 </style>
 </head>
 <body>
+<div class="wrap">
+
+  <div class="brand">
+    <img src="icon-192.png" alt="">
+    <div>
+      <h1>ระบบ HR ชุมชนช็อป</h1>
+      <p>ลงเวลา ตารางงาน การลา และสลิปเงินเดือน</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <a class="go" id="go" href="#">เข้าสู่ระบบ</a>
+    <p class="note">ใช้อีเมลและรหัสผ่านที่ HR ให้ไว้</p>
+  </div>
+
+  <div class="card">
+    <h2>📱 ติดตั้งลงหน้าจอมือถือ <small>ทำครั้งเดียว</small></h2>
+    <p style="margin:6px 0 0; color:var(--mute); font-size:14.5px">ติดตั้งแล้วจะเปิดได้เหมือนแอปจริง ไม่ต้องล็อกอินใหม่ทุกครั้ง</p>
+
+    <h2 style="margin-top:16px">iPhone</h2>
+    <ol>
+      <li>เปิดหน้านี้ด้วย <b class="key">Safari</b></li>
+      <li>กดปุ่มแชร์ <b class="key">⬆︎</b> ตรงกลางด้านล่างจอ</li>
+      <li>เลื่อนลงหา <b class="key">เพิ่มไปยังหน้าจอโฮม</b> แล้วกด <b class="key">เพิ่ม</b></li>
+    </ol>
+
+    <h2 style="margin-top:16px">Android</h2>
+    <ol>
+      <li>เปิดหน้านี้ด้วย <b class="key">Chrome</b></li>
+      <li>กดจุดสามจุด <b class="key">⋮</b> มุมขวาบน</li>
+      <li>เลือก <b class="key">ติดตั้งแอป</b> หรือ <b class="key">เพิ่มลงในหน้าจอหลัก</b></li>
+    </ol>
+
+    <div class="warn">
+      <b>ถ้าเปิดลิงก์นี้มาจากไลน์</b> ให้กดจุดสามจุดมุมขวาบนในไลน์ แล้วเลือก
+      “เปิดในเบราว์เซอร์” ก่อน ถ้าติดตั้งจากในไลน์เลยจะไม่ได้ไอคอน และต้องล็อกอินใหม่ทุกวัน
+    </div>
+  </div>
+
+  <footer>บริษัท ชุมชนช็อป จำกัด</footer>
+</div>
+
 <script>
-  if (ok && standalone) {
-    var f = document.createElement("iframe");
-    f.src = go; f.title = "CCS"; document.body.appendChild(f);
-  } else {
-    document.body.insertAdjacentHTML("beforeend",
-      '<main class="info"><div><img src="icon-192.png" alt=""><h1>CCS</h1>' +
-      '<p>ตอนนี้กดปุ่มแชร์ แล้วเลือก "เพิ่มไปยังหน้าจอโฮม" ได้เลย</p>' +
-      '<a href="' + APP_URL + '">เปิดระบบ</a></div></main>');
-  }
+  (function () {
+    document.getElementById('go').href = APP_URL;
+    // เปิดจากไอคอนบนหน้าจอโฮม → เข้าแอปให้เลย ไม่ต้องกดซ้ำ
+    var standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    if (standalone) location.replace(APP_URL);
+  })();
 </script>
 </body>
 </html>
